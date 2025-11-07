@@ -1,218 +1,207 @@
 
-# 🦺 PPE Compliance Detection System
 
-A *robust, AI-powered system* for monitoring Personal Protective Equipment (PPE) compliance in workplaces.  
-The system uses *YOLOv8* for person detection and *Vision Transformer (ViT)* for PPE classification on cropped person images. It also provides a *web interface* for uploading images and visualizing results in real-time.
+PPE Compliance Detection System
 
----
+This project is a robust PPE (Personal Protective Equipment) compliance detection system using YOLOv8 for person and PPE detection and Vision Transformer (ViT) for multi-label classification of PPE worn by individuals. It provides a web interface to upload images and visualize detected PPE compliance.
 
-## 🔍 Features
-
-- Detects persons in images and identifies their PPE compliance.
-- Supports detection of multiple PPE items: boots, ear protection, goggles, gloves, helmet, mask, vest.
-- Provides *real-time compliance scores* for each detected person.
-- Uses *YOLOv8* for object detection and *ViT* for classification on cropped persons.
-- Handles *noisy images* with preprocessing to improve accuracy.
-- *Flask-based web app* for easy image upload and results visualization.
 
 ---
 
-## 🗂 Project Structure
+Features
 
-object_detection/ ├── app.py                  # Flask app entry point ├── src/                    # All source code modules │   ├── train_yolo.py       # YOLOv8 training script │   ├── train_vit.py        # ViT training script │   ├── extract_persons.py  # Crop persons from images │   ├── auto_label_ann.py   # Auto-label PPE on cropped persons │   ├── fuse_models.py      # Fuse YOLO + ViT predictions │   └── utils.py            # Utility functions ├── dataset/                # Dataset folder (images & YAML) │   ├── train/ │   ├── valid/ │   └── test/ ├── weights/                # Saved YOLO and ViT weights ├── tmp/                    # Temporary folder: person crops & annotations │   ├── persons/ │   └── ann.json ├── static/                 # Web app static folder │   ├── uploads/ │   └── results/ └── README.md               # Project documentation
+Detects persons and their PPE items (helmet, vest, gloves, mask, etc.) in images.
+
+Multi-label classification using ViT for more accurate PPE recognition.
+
+Fusion of YOLO and ViT predictions for a robust compliance score.
+
+Supports automatic annotation of cropped person images.
+
+Web interface for real-time image upload and result visualization.
+
+
 
 ---
 
-## ⚙ Installation
+Project Structure
+
+object_detection/
+├── app.py                  # Flask web app entry point
+├── src/                    # Source code modules
+│   ├── train_yolo.py       # YOLOv8 training script
+│   ├── train_vit.py        # ViT training script
+│   ├── extract_persons.py  # Crop persons from images
+│   ├── auto_label_ann.py   # Auto-label PPE on cropped persons
+│   ├── fuse_models.py      # Fuse YOLO + ViT predictions
+│   └── utils.py            # Utility functions (e.g., folder creation)
+├── dataset/                # Dataset folder
+│   ├── train/images/       # Training images
+│   ├── valid/images/       # Validation images
+│   └── test/images/        # Test images
+├── weights/                # Saved YOLO and ViT weights
+│   ├── yolo_best.pt
+│   └── vit_best.pt
+├── tmp/                    # Temporary folder
+│   ├── persons/            # Cropped person images
+│   └── ann.json            # PPE annotations for ViT training
+├── static/                 # Web app static assets
+│   ├── uploads/            # Uploaded images
+│   └── results/            # Result images with predictions
+└── README.md               # Project documentation
+
+
+---
+
+Workflow
+
+1. YOLO Detection
+
+Detects all objects in the image including persons and PPE items.
+
+Crops person regions for ViT processing.
+
+
+
+2. ViT Multi-label Classification
+
+Classifies PPE items worn by each person.
+
+Trained on cropped person images and ann.json annotations.
+
+
+
+3. Fusion
+
+Combines YOLO bounding boxes and ViT PPE predictions.
+
+Calculates compliance score for each person.
+
+Annotates images with bounding boxes and compliance percentage.
+
+
+
+4. Web Interface
+
+Upload images via Flask web app.
+
+View results with colored bounding boxes:
+
+Green: Fully compliant
+
+Orange: Partially compliant
+
+Red: Non-compliant
+
+
+
+
+
+
+---
+
+Installation
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/username/ppe-compliance-detection.git
+
+
+git clone https://github.com/rajnishkumar1906/PPE-Detection-Hybrid_YOLOv8_ViT
 cd ppe-compliance-detection
 
-2. Create a virtual environment (Python 3.12 recommended):
+2. Create Python environment (Python 3.12 recommended):
 
 
 
 conda create -n ppe python=3.12 -y
 conda activate ppe
 
-3. Install required packages:
+3. Install dependencies:
 
 
 
 pip install -r requirements.txt
 
-4. Prepare your dataset:
+4. Prepare dataset:
 
 
 
-dataset/
-├── train/images/
-├── valid/images/
-└── test/images/
+Place images in dataset/train/images/, dataset/valid/images/, dataset/test/images/
 
-5. Ensure data.yaml exists with class names:
+Ensure data.yaml is correctly configured with class names and paths.
 
-
-
-nc: 8
-names: ['boots', 'ear_protection', 'goggles', 'gloves', 'helmet', 'mask', 'person', 'vest']
 
 
 ---
 
-🚀 Usage
+Usage
 
-1. Extract Person Crops
-
-python src/extract_persons.py
-
-Crops all detected persons into tmp/persons/ folder.
+1. Auto-label PPE annotations for ViT training (optional but recommended):
 
 
----
-
-2. Auto-label PPE (Optional)
-
-Automatically label PPE on cropped images:
 
 python src/auto_label_ann.py
 
-> This generates tmp/ann.json with PPE labels.
+Automatically generates tmp/ann.json for ViT training.
 
 
+2. Run the Flask Web App:
 
 
----
-
-3. Train Models (if not already trained)
-
-YOLOv8 will detect persons and PPE objects.
-
-ViT will classify PPE compliance on cropped person images.
-
-
-> The Flask app automatically trains ViT if vit_best.pt is missing and person crops & annotations are present.
-
-
-
-
----
-
-4. Run Web App
 
 python app.py
 
-Open your browser: http://127.0.0.1:5000
+Access the web interface at: http://127.0.0.1:5000
 
-Upload an image and view compliance results.
+Upload images and see PPE compliance results.
 
-Compliance is visualized using colored bounding boxes:
 
-Green: ≥80% PPE compliance
+3. Training (if needed):
 
-Orange: 50–79% compliance
 
-Red: <50% compliance
 
+YOLOv8 Training:
+
+
+python -c "from src.train_yolo import train_yolo; train_yolo('dataset/data.yaml', 'weights', epochs=50)"
+
+ViT Training:
+
+
+python -c "from src.train_vit import train_vit, PPE_CLASSES; train_vit('tmp/persons', 'tmp/ann.json', 'weights', epochs=15)"
+
+
+---
+
+Notes
+
+Ensure tmp/persons/ contains cropped person images and ann.json has proper PPE labels for accurate ViT training.
+
+YOLO model (yolo_best.pt) should exist in weights/ to skip retraining.
+
+Adjust ViT epochs for better accuracy; more epochs improve robustness.
 
 
 
 ---
 
-🎯 Key Features in Action
+Supported PPE Classes
 
-Fusion of YOLO and ViT predictions.
+PPE_CLASSES = ['helmet', 'vest', 'gloves', 'mask']
 
-Compliance scoring based on PPE detection.
-
-Preprocessing and noise removal to improve prediction accuracy.
-
-Support for multiple PPE classes.
-
-Real-time web interface for user-friendly interaction.
+Add more classes if needed in both YOLO dataset and ViT annotation file.
 
 
 
 ---
 
-💻 Requirements
+Contributing
 
-Python 3.12
+Fork the repository
 
-PyTorch
+Create a feature branch
 
-timm for Vision Transformer
-
-ultralytics for YOLOv8
-
-OpenCV
-
-Flask
-
-
-Example requirements.txt:
-
-torch>=2.1.0
-timm>=0.9.0
-ultralytics>=8.0.20
-opencv-python>=4.8.0
-Flask>=2.3.0
-numpy>=1.25.0
-Pillow>=10.0
-tqdm>=4.65
-
-
----
-
-📝 Notes
-
-Ensure person crops exist in tmp/persons/ before training ViT.
-
-Fill ann.json either manually or with auto_label_ann.py.
-
-YOLOv8 weights should be saved in weights/yolo_best.pt.
-
-Training ViT for more epochs increases accuracy (default 15, can be changed in app.py).
+Submit pull requests for improvements, bug fixes, or new PPE classes
 
 
 
 ---
-
-📦 Future Improvements
-
-Add real-time video streaming for live PPE monitoring.
-
-Integrate alert system for non-compliant workers.
-
-Support more PPE classes or custom datasets.
-
-
-
----
-
-⚡ Authors
-
-Rajnish – Original Developer – Your GitHub Profile
-
-
----
-
-🛡 License
-
-MIT License – see LICENSE file.
-
-
----
-
-This README is *ready-to-go*.  
-
-It clearly explains the *project, usage, structure, and how to get it running, making it **GitHub-ready*.  
-
----
-
-If you want, I can also **create a ready-to-copy requirements.txt** and *push commands* snippet so anyone can clone and run the project immediately.  
-
-Do you want me to do that too?
