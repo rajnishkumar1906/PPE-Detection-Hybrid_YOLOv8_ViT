@@ -1,0 +1,6 @@
+train: D:\COMPUTERVISION\object_detection\dataset\train\images
+val: D:\COMPUTERVISION\object_detection\dataset\valid\images
+test: D:\COMPUTERVISION\object_detection\dataset\test\images
+
+nc: 8
+names: ['boots', 'ear_protection', 'goggles', 'gloves', 'helmet', 'mask', 'person', 'vest']
