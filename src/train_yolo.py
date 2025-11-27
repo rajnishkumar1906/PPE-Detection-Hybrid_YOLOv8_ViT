@@ -14,7 +14,7 @@ def train_yolo(data_yaml, project_dir, epochs=50, imgsz=640, batch=16):
         raise FileNotFoundError(f"Dataset YAML not found at: {abs_yaml}")
 
     print(f"🚀 Training YOLOv8s with dataset: {abs_yaml}")
-    model = YOLO("yolov8s.pt")  # use yolov8s base
+    model = YOLO("yolov8n.pt")  # use yolov8s base
 
     batch = min(batch, 8)
     try:

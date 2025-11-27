@@ -1,0 +1,38 @@
+# ---------------------------
+#  Ignore DATASET FOLDER
+# ---------------------------
+dataset/test
+dataset/train
+dataset/valid
+
+# YOLO training artifacts
+runs/
+runs/*
+
+# Temporary files
+tmp/
+tmp/*
+*.json
+*.cache
+
+# model weights (optional)
+# Remove this if you WANT to push weights
+weights/
+weights/*
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.venv/
+venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploaded images during testing
+static/uploads/
+static/results/
